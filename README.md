@@ -14,7 +14,7 @@ Bienvenue dans **Fort Boyard Simulator**, un jeu inspiré de la célèbre émiss
 
 ## 👥 Contributeurs  
 
-- **[Ton Nom]** - *Développeur solo, étudiant nostalgique*
+- **Matthieu SIRIER** - *Développeur solo, étudiant nostalgique*
 - Et euh... personne d'autre, parce que pourquoi partager la gloire ? 😎  
 
 ---
