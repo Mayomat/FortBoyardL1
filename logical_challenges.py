@@ -56,4 +56,29 @@ def nim_game():
         print("Le maître a pris le dernier bâton, vous avez gagné la partie et obtenez une clé.")
         return True
 
-nim_game()
+"""
+Tic Tac Toe (medium)
+"""
+
+def display_grid(grid):
+    print(f"{grid[0][0]} | {grid[0][1]} | {grid[0][2]}\n---------\n{grid[1][0]} | {grid[1][1]} | {grid[1][2]}\n---------\n{grid[2][0]} | {grid[2][1]} | {grid[2][2]}")
+
+def check_victory(grid, symbol):
+
+    for i in range(3):
+
+        # First check rows
+        if sum(grid[i])/symbol == symbol: # If the statement is true, it means each case of the row is the symbol, so a win
+            return True
+
+        # Checks columns
+        if sum([grid[j][i] for j in range(3)])/symbol == symbol: # If the statement is true, it means each case of the column is the symbol, so a win
+            return True
+
+    # Check diagonals
+    if sum(grid[k][k] for k in range(3))/symbol == symbol or sum(grid[-l-1][-l-1] for l in range(3))/symbol == symbol:
+        return True
+
+    return False
+
+# grids = [[1,2,3], [4,5,6], [7,8,9]]
