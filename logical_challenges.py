@@ -68,17 +68,21 @@ def check_victory(grid, symbol):
     for i in range(3):
 
         # First check rows
-        if sum(grid[i])/symbol == symbol: # If the statement is true, it means each case of the row is the symbol, so a win
+        if sum(grid[i])/symbol == 3: # If the statement is true, it means each case of the row is the symbol, so a win
             return True
 
         # Checks columns
-        if sum([grid[j][i] for j in range(3)])/symbol == symbol: # If the statement is true, it means each case of the column is the symbol, so a win
+        if sum([grid[j][i] for j in range(3)])/3 == symbol: # If the statement is true, it means each case of the column is the symbol, so a win
             return True
 
     # Check diagonals
-    if sum(grid[k][k] for k in range(3))/symbol == symbol or sum(grid[-l-1][-l-1] for l in range(3))/symbol == symbol:
+    if sum(grid[k][k] for k in range(3))/symbol == 3 or sum(grid[-l-1][-l-1] for l in range(3))/symbol == 3:
         return True
 
     return False
 
-# grids = [[1,2,3], [4,5,6], [7,8,9]]
+
+
+# grids = [[1,1,0], [4,1,1], [7,8,1]]
+
+print(check_victory(grids, 1))
