@@ -65,24 +65,135 @@ def display_grid(grid):
 
 def check_victory(grid, symbol):
 
+    """
+    Logic explanation :
+    You check the sum of the acsii value (ord(x)) of the row / col / diag and divide by the ascii value of the symbol.
+    If you get 3, it means the row / col / diag is composed of 3 times the symbol, so it is a victory.
+    """
+
     for i in range(3):
 
         # First check rows
-        if sum(grid[i])/symbol == 3: # If the statement is true, it means each case of the row is the symbol, so a win
+        if sum(ord(j) for j in grid[i])/ord(symbol) == 3: # If the statement is true, it means each case of the row is the symbol, so a win
             return True
 
         # Checks columns
-        if sum([grid[j][i] for j in range(3)])/3 == symbol: # If the statement is true, it means each case of the column is the symbol, so a win
+        if sum(ord(grid[k][i]) for k in range(3))/ord(symbol) == 3: # If the statement is true, it means each case of the column is the symbol, so a win
             return True
 
     # Check diagonals
-    if sum(grid[k][k] for k in range(3))/symbol == 3 or sum(grid[-l-1][-l-1] for l in range(3))/symbol == 3:
+    if sum(ord(grid[k][k]) for k in range(3))/ord(symbol) == 3 or sum(ord(grid[2-l][l]) for l in range(3))/ord(symbol) == 3:
         return True
 
     return False
 
+def master_move(grid, symbol, advsymbol): # Return the master's move
 
+    available_moves = []
 
-# grids = [[1,1,0], [4,1,1], [7,8,1]]
+    # Check for every case if it is empty
+    for i in range(3):
+        for j in range(3):
+            if grid[i][j] == " ":
+                available_moves.append((i, j))
 
-print(check_victory(grids, 1))
+    block = 0 # Variable to change if you can block the player from winning
+
+    # For every empty case, look what the plays do
+    for move in available_moves:
+
+        # Create the new grid if move is played
+        grid2 = [row[:] for row in grid] # Needed gpt there, idk why but modifying grid2 changed grid, with grid2 = grid.copy() too
+        grid2[move[0]][move[1]] = symbol
+
+        # Look if this play makes a win for the master
+        if check_victory(grid2, symbol):
+            return move
+        # Look if this play makes a win for the player, if yes, consider blocking
+        grid2[move[0]][move[1]] = advsymbol
+        if check_victory(grid2, advsymbol):
+            block = move
+
+    # If there is no possible victory but a block is found, play it
+    if block != 0:
+        return block
+
+    # If there is no win or block play, play randomly
+    return available_moves[randint(0, len(available_moves)-1)]
+
+def player_turn(grid): # Return the grid after the player play
+
+    play = input("A vous de jouer, où voulez vous placer votre symbol ? (ex: 1,2) : ")
+    valid = 0
+
+    while not valid: # Verify that the input is correct
+
+        valid = (len(play) == 3 and play[0] in '123' and play[1] == ',' and play[2] in '123') # Verify that the input is the correct format
+
+        if valid: # If the format is correct
+
+            play = (int(play[0]), int(play[2]))  # Put the input into a tuple
+
+            # Check that the spot is empty and playable
+            if grid[play[0]-1][play[1]-1] == " ":
+                valid = 1
+            # If not, then the input is not valid
+            else:
+                play = input("Votre emplacement est déjà occupé, essayez encore (ex: 1,2) : ")
+                valid = 0
+
+        else:  # If not, then the input is not valid
+            play = input("Votre emplacement est incorrect, essayez encore (ex: 1,2) : ")
+
+    grid[play[0]-1][play[1]-1] = "X" # Change the case where the player played
+    return grid
+
+def full_grid(grid): # Return if the grid is full
+    for i in range(3): # In each row
+        if " " in grid[i]: # Check if there is an empty space
+            return False # If there is, the grid is not full
+    return True # Otherwise, the grid is full
+
+def check_result(grid): # Check if the game is finished
+    if check_victory(grid, "X"): # Check if player "X" won
+        return True
+    if check_victory(grid, "O"): # Check if player "O" won
+        return True
+    if full_grid(grid): # Check if there is no move left
+        return True
+    return False
+
+def tictactoe_game(): # Operates the whole game
+
+    print("Bienvenue à l'épreuve du morpion, tentez de remporter une clé en vainquant le Maître ! ")
+
+    grid = [[" ", " ", " "], # Initialize the grid
+            [" ", " ", " "],
+            [" ", " ", " "]]
+    display_grid(grid)
+
+    turn = 0
+
+    while not check_result(grid): # While the game is not finished
+
+        if turn == 0: # If it is the player turn
+            player_turn(grid)
+            display_grid(grid)
+            if check_victory(grid, "X"): # If player won, return True
+                return True
+            else: # Otherwise switch turns
+                turn = 1
+
+        else:
+            move = master_move(grid, "O", "X") # Get the move of the master
+            grid[move[0]][move[1]] = "O" # Apply it on the grid
+            print("Au maître de jouer (O)...")
+            display_grid(grid)
+            if check_victory(grid, "O"): # If master win, return False
+                return False
+            else: # Otherwise switch turns
+                turn = 0
+
+    return False
+
+print(tictactoe_game())
